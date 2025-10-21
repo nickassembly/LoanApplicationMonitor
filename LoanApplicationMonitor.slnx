@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="LoanApplicationMonitor.Core/LoanApplicationMonitor.Core.csproj" Id="533e298c-2181-466b-9ac1-d9e40ebafbe1" />
+  <Project Path="LoanApplicationMonitor.Data/LoanApplicationMonitor.Data.csproj" Id="6068d3bd-2033-4026-9190-27314f728af8" />
+  <Project Path="LoanApplicationMonitor.Test/LoanApplicationMonitor.Test.csproj" Id="b70e5a34-d608-4a5f-80da-9b32a6c54319" />
+  <Project Path="LoanApplicationMonitor/LoanApplicationMonitor.API.csproj" />
+</Solution>
