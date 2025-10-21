@@ -8,6 +8,7 @@
 ## Solution Notes
 **UI** - Razor pages used for simplicity & integration of this limited time and scoped project. For larger projects with more complex states, 
          I would have opted for a react front end UI
+
 **Test Project** - Test project references Core, Data, and API projects but is not referenced by other projects. Mocks are used here
                    to test specific functionality in isolation.
 
