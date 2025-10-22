@@ -1,8 +1,8 @@
-﻿## General Purpose
+﻿## About this Demo
 * This solution is designed as an N-tier application using multiple data sources, which are consumed by a front end.
 * The contrived use cases include 2 separate APIs: 
-  * Data Source 1 - Monitoring API: Displays a list of system health messages from various services
-  * Data Source 2 - LoanApplication API: Composed of fields relevant to a loan application process.
+  * Data Source 1 (Azure Blob JSON file) - Monitoring API: Displays a list of system health messages from various services
+  * Data Source 2 (Azure SQL Db) - LoanApplication API: Composed of fields relevant to a loan application process.
       * Contains editable fields displayed together on a front end UI (Applicant Name, Type of Loan, Amount Requested, Credit Score and Time Stamp)
 
 ## Solution Notes
@@ -13,42 +13,32 @@
                    to test specific functionality in isolation.
 
 ## Solution Structure
-              ┌───────────────────────────────┐
-              │           UI Layer            │
-              │ LoanApplicationMonitor.WebApp │
-              | Razor Pages consume APIs      |
-              | Maps to FE component          │
-              └───────────────┬───────────────┘
-                              │ HTTP/REST
-                              ▼
-              ┌───────────────────────────────┐
-              │        API Layer              │
-              │ LoanApplicationMonitor.API    │
-              │ MonitoringApi                 │
-              │ LoansApi                      │
-              │                               │
-              └───────────────┬───────────────┘
-                              │ Uses Core Services
-                              ▼
-              ┌───────────────────────────────┐
-              │        Core / Domain          |
-              | LoanApplicationMonitor.Core   │
-              │ Interfaces, DTOs, Domain Logic│
-              │                               │
-              └───────────────┬───────────────┘
-                              │ Implements
-                              ▼
-              ┌───────────────────────────────┐
-              │         Data Layer            |
-              │ LoanApplicationMonitor.Data   │
-              │ LoansDbContext                │
-              | MonitoringDbContext           │ 
-              │                               │
-              └───────────────────────────────┘
-                         Test Project
-              ┌───────────────────────────────┐
-              │                               |
-              │ LoanApplicationMonitor.Test   │
-              │                               │
-              │                               │
-              └───────────────────────────────┘
+   ┌───────────────────────────────┐
+   │           UI Layer            │
+   │ LoanApplicationMonitor.WebApp │
+   | Razor Pages consume APIs      |
+   └───────────────┬───────────────┘
+                   │ HTTP/REST
+                   ▼
+   ┌───────────────────────────────┐
+   │        API Layer              │
+   │ LoanApplicationMonitor.API    │
+   │ LoansApi (reads from SQL Db)  │
+   │ MonitorApi (reads from Blob)  │
+   └───────────────┬───────────────┘
+                   │ Uses Core Services
+                   ▼
+   ┌───────────────────────────────┐
+   │        Core / Domain          │
+   │ LoanApplicationMonitor.Core   │
+   │ Interfaces, DTOs, Domain Logic│
+   └───────────────┬───────────────┘
+                   │ Implements
+                   ▼
+   ┌────────────────────────────────┐
+   │          Data Layer            │
+   │ LoanApplicationMonitor.Data    │
+   │ - LoansDbContext (EF Core)     |
+   │ - LoansRepo                    │ 
+   │ - HealthMonitoringRepo         │
+   └────────────────────────────────┘

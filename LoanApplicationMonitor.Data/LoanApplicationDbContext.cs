@@ -1,13 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LoanApplicationMonitor.Core.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace LoanApplicationMonitor.Data
 {
-    // todo - if time allows, (for better encapsulation) switch back to internal and add helper method to expose data layer
-    public class LoanApplicationDbContext
+    public class LoanApplicationDbContext : DbContext
     {
+        public LoanApplicationDbContext(DbContextOptions<LoanApplicationDbContext> options)
+            : base(options)
+        {
+        }
+
+        public DbSet<Loan> Loan { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer();
+        }
     }
 }
