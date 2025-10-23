@@ -13,32 +13,29 @@
                    to test specific functionality in isolation.
 
 ## Solution Structure
-   ┌───────────────────────────────┐
+    ===============================
    │           UI Layer            │
    │ LoanApplicationMonitor.WebApp │
    | Razor Pages consume APIs      |
-   └───────────────┬───────────────┘
+    ===============================
                    │ HTTP/REST
-                   ▼
-   ┌───────────────────────────────┐
+    ===============================
    │        API Layer              │
    │ LoanApplicationMonitor.API    │
    │ LoansApi (reads from SQL Db)  │
    │ MonitorApi (reads from Blob)  │
-   └───────────────┬───────────────┘
+    ==============================
                    │ Uses Core Services
-                   ▼
-   ┌───────────────────────────────┐
+    ===============================
    │        Core / Domain          │
    │ LoanApplicationMonitor.Core   │
    │ Interfaces, DTOs, Domain Logic│
-   └───────────────┬───────────────┘
+    ==============================
                    │ Implements
-                   ▼
-   ┌────────────────────────────────┐
+    ================================
    │          Data Layer            │
    │ LoanApplicationMonitor.Data    │
    │ - LoansDbContext (EF Core)     |
    │ - LoansRepo                    │ 
    │ - HealthMonitoringRepo         │
-   └────────────────────────────────┘
+    ================================
