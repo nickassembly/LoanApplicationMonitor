@@ -1,5 +1,6 @@
 using Azure.Identity;
 using Azure.Storage.Blobs;
+using LoanApplicationMonitor.API;
 using LoanApplicationMonitor.Core.Entities;
 using LoanApplicationMonitor.Core.Interfaces;
 using LoanApplicationMonitor.Data;
@@ -60,6 +61,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 
