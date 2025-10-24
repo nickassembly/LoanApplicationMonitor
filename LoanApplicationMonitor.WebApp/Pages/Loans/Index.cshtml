@@ -4,7 +4,9 @@
     ViewData["Title"] = "Loans";
 }
 
-<h1>Loans</h1>
+<h2>Loans</h2>
+
+<button class="btn btn-primary mb-3" onclick="openModal()">Add Loan</button>
 
 @if (!Model.Loans.Any())
 {
@@ -12,27 +14,155 @@
 }
 else
 {
-    <table class="table">
+    <table class="table" id="loansTable">
         <thead>
             <tr>
-                <th>Select</th>
                 <th>Applicant</th>
-                <th>Loan Type</th>
-                <th>Amount</th>
                 <th>Credit Score</th>
+                <th>Loan Type</th>
+                <th>Request Reason</th>
+                <th>Amount</th>
+                <th>Comments</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var loan in Model.Loans)
             {
-                <tr>
-                    <td><input type="checkbox" asp-for="@loan.IsSelected" /></td>
-                    <td>@loan.ApplicantFullName</td>
-                    <td>@loan.LoanType</td>
-                    <td>@loan.LoanAmount</td>
-                    <td>@loan.CreditScore</td>
+                <tr id="loan-@loan.loanId">
+                    <td>@loan.applicantFullName</td>
+                    <td>@loan.creditScore</td>
+                    <td>@loan.loanType</td>
+                    <td>@loan.loanRequestReason</td>
+                    <td>@loan.loanAmount</td>
+                    <td>@loan.adminComments</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" type="button" onclick='openModal(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(loan, new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = null })))'>Edit</button>
+                        <form method="post" asp-page-handler="Delete" style="display:inline;">
+                            <input type="hidden" name="id" value="@loan.loanId" />
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
+}
+
+<!-- Modal -->
+<div class="modal" tabindex="-1" id="loanModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Create Loan</h5>
+                <button type="button" class="btn-close" onclick="closeModal()"></button>
+            </div>
+
+            <!-- CREATE FORM -->
+            <form method="post" asp-page-handler="Create" id="createForm">
+                <div class="modal-body">
+                    <input type="hidden" name="loanId" />
+                    <div class="mb-3">
+                        <label class="form-label">Applicant Name</label>
+                        <input type="text" class="form-control" name="ApplicantFullName" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Loan Type</label>
+                        <input type="text" class="form-control" name="LoanType" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Request Reason</label>
+                        <input type="text" class="form-control" name="LoanRequestReason" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Loan Amount</label>
+                        <input type="number" class="form-control" name="LoanAmount" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Admin Comments</label>
+                        <input type="text" class="form-control" name="AdminComments" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Credit Score</label>
+                        <input type="number" class="form-control" name="CreditScore" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </form>
+
+            <!-- UPDATE FORM -->
+            <form method="post" asp-page-handler="Update" id="updateForm" style="display:none;">
+                <div class="modal-body">
+                    <input type="hidden" name="loanId" id="updateLoanId" />
+                    <div class="mb-3">
+                        <label class="form-label">Applicant Name</label>
+                        <input type="text" class="form-control" id="updateApplicantName" name="ApplicantFullName" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Loan Type</label>
+                        <input type="text" class="form-control" id="updateLoanType" name="LoanType" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Request Reason</label>
+                        <input type="text" class="form-control" id="updateLoanRequestReason" name="LoanRequestReason" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Loan Amount</label>
+                        <input type="number" class="form-control" id="updateLoanAmount" name="LoanAmount" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Admin Comments</label>
+                        <input type="text" class="form-control" id="updateAdminComments" name="AdminComments" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Credit Score</label>
+                        <input type="number" class="form-control" id="updateCreditScore" name="CreditScore" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let modal = document.getElementById("loanModal");
+        let createForm = document.getElementById("createForm");
+        let updateForm = document.getElementById("updateForm");
+
+        function openModal(loan = null) {
+            modal.style.display = "block";
+
+            if (loan) {
+                // Edit mode
+                document.getElementById("modalTitle").innerText = "Update Loan";
+                createForm.style.display = "none";
+                updateForm.style.display = "block";
+
+                document.getElementById("updateLoanId").value = loan.loanId;
+                document.getElementById("updateApplicantName").value = loan.applicantFullName;
+                document.getElementById("updateLoanType").value = loan.loanType;
+                document.getElementById("updateLoanRequestReason").value = loan.loanRequestReason;
+                document.getElementById("updateLoanAmount").value = loan.loanAmount;
+                document.getElementById("updateAdminComments").value = loan.adminComments;
+                document.getElementById("updateCreditScore").value = loan.creditScore;
+            } else {
+                // Create mode
+                document.getElementById("modalTitle").innerText = "Create Loan";
+                createForm.style.display = "block";
+                updateForm.style.display = "none";
+            }
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+        }
+    </script>
 }

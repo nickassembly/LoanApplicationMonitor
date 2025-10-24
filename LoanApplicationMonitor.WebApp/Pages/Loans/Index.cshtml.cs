@@ -1,6 +1,8 @@
 using LoanApplicationMonitor.API.Dtos;
 using LoanApplicationMonitor.WebApp.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Net.Http;
 
 namespace LoanApplicationMonitor.WebApp.Pages.Loans
 {
@@ -8,11 +10,14 @@ namespace LoanApplicationMonitor.WebApp.Pages.Loans
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<IndexModel> _logger;
+        private readonly IConfiguration _configuration;
+        private readonly string _apiBaseUrl;
 
-        public IndexModel(IHttpClientFactory httpClientFactory, ILogger<IndexModel> logger)
+        public IndexModel(IHttpClientFactory httpClientFactory, ILogger<IndexModel> logger, IConfiguration configuration)
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;
+            _apiBaseUrl = configuration["ApiSettings:BaseUrl"] ?? "";
         }
 
         public List<LoanApplicationViewModel> Loans { get; set; } = new();
@@ -32,15 +37,16 @@ namespace LoanApplicationMonitor.WebApp.Pages.Loans
                 {
                     Loans = apiResponse.Select(dto => new LoanApplicationViewModel
                     {
-                        ApplicantFullName = dto.ApplicantFullName,
-                        LoanAmount = dto.LoanAmount,
-                        CreditScore = dto.CreditScore,
-                        LoanType = dto.LoanType,
-                        LoanRequestReason = dto.LoanRequestReason,
-                        AdminComments = dto.AdminComments,
-                        IsSelected = false,
-                        IsEditing = false,
-                        ValidationMessage = string.Empty
+                        loanId = dto.LoanId,
+                        applicantFullName = dto.ApplicantFullName,
+                        loanAmount = dto.LoanAmount,
+                        creditScore = dto.CreditScore,
+                        loanType = dto.LoanType,
+                        loanRequestReason = dto.LoanRequestReason,
+                        adminComments = dto.AdminComments,
+                        isSelected = false,
+                        isEditing = false,
+                        validationMessage = string.Empty
                     }).ToList();
                 }
                 else
@@ -54,6 +60,53 @@ namespace LoanApplicationMonitor.WebApp.Pages.Loans
                 _logger.LogError(ex, "Error fetching loans from API");
                 Loans = new List<LoanApplicationViewModel>();
             }
+        }
+
+        //public async Task<IActionResult> OnPostCreateAsync(LoanCreateDto newLoan)
+        //{
+        //    var client = _httpClientFactory.CreateClient();
+        //    client.BaseAddress = new Uri(_apiBaseUrl);
+
+        //    await client.PostAsJsonAsync("api/Loan", newLoan);
+        //    return RedirectToPage();
+        //}
+
+        //public async Task<IActionResult> OnPostUpdateAsync(LoanUpdateDto updatedLoan)
+        //{
+        //    var client = _httpClientFactory.CreateClient();
+        //    client.BaseAddress = new Uri(_apiBaseUrl);
+
+        //    await client.PutAsJsonAsync($"api/Loan/{updatedLoan.LoanId}", updatedLoan);
+        //    return RedirectToPage();
+        //}
+
+        public async Task<IActionResult> OnPostCreateAsync(LoanCreateDto newLoan)
+        {
+            var client = _httpClientFactory.CreateClient();
+            client.BaseAddress = new Uri(_apiBaseUrl);
+            var response = await client.PostAsJsonAsync("api/Loan", newLoan);
+            if (!response.IsSuccessStatusCode)
+                _logger.LogError($"Create failed: {response.StatusCode}");
+            return RedirectToPage();
+        }
+
+        public async Task<IActionResult> OnPostUpdateAsync(LoanUpdateDto updatedLoan)
+        {
+            var client = _httpClientFactory.CreateClient();
+            client.BaseAddress = new Uri(_apiBaseUrl);
+            var response = await client.PutAsJsonAsync($"api/Loan/{updatedLoan.LoanId}", updatedLoan);
+            if (!response.IsSuccessStatusCode)
+                _logger.LogError($"Update failed: {response.StatusCode}");
+            return RedirectToPage();
+        }
+
+        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        {
+            var client = _httpClientFactory.CreateClient();
+            client.BaseAddress = new Uri(_apiBaseUrl);
+
+            await client.DeleteAsync($"api/Loan/{id}");
+            return RedirectToPage();
         }
     }
 }

@@ -4,7 +4,7 @@ namespace LoanApplicationMonitor.API.Dtos
 {
     public class LoanUpdateDto
     {
-       // public int LoanId { get; set; }
+        public int LoanId { get; set; }
 
         [Required]
         [MinLength(3, ErrorMessage = "Full name must be at least 3 characters long.")]

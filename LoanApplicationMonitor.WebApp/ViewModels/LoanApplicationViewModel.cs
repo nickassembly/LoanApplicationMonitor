@@ -3,17 +3,18 @@ namespace LoanApplicationMonitor.WebApp.Models
 {
     public class LoanApplicationViewModel
     {
-        public string ApplicantFullName { get; set; } = string.Empty;
-        public int LoanAmount { get; set; }
-        public int? CreditScore { get; set; }
-        public string? LoanType { get; set; } = string.Empty;
-        public string? LoanRequestReason { get; set; } = string.Empty;
-        public string? AdminComments { get; set; } = string.Empty;
+        public int loanId { get; set; }
+        public string applicantFullName { get; set; } = string.Empty;
+        public int loanAmount { get; set; }
+        public int? creditScore { get; set; }
+        public string? loanType { get; set; } = string.Empty;
+        public string? loanRequestReason { get; set; } = string.Empty;
+        public string? adminComments { get; set; } = string.Empty;
 
         // UI Specific Models
-        public bool IsSelected { get; set; }
-        public bool IsEditing { get; set; }
-        public string ValidationMessage { get; set; } = string.Empty;
+        public bool isSelected { get; set; }
+        public bool isEditing { get; set; }
+        public string validationMessage { get; set; } = string.Empty;
 
     }
 }

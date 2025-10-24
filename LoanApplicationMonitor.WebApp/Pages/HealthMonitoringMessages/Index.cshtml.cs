@@ -1,5 +1,7 @@
 using LoanApplicationMonitor.API.Dtos;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Net.Http;
 
 namespace LoanApplicationMonitor.WebApp.Pages.HealthMonitoringMessages
 {
