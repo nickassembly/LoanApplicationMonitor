@@ -1,4 +1,5 @@
-﻿using LoanApplicationMonitor.API.Dtos;
+﻿using AutoMapper;
+using LoanApplicationMonitor.API.Dtos;
 using LoanApplicationMonitor.Core;
 using LoanApplicationMonitor.Core.Entities;
 using LoanApplicationMonitor.Core.Interfaces;
@@ -16,20 +17,30 @@ namespace LoanApplicationMonitor.API.Controllers
         // Due to limited scope of business logic, repository is used directly in controller
         // If business logic grows from this point, wrapping the repository in a service layer would likely make sense
         private readonly ILoanRepository _loanRepo;
+        private readonly IMapper _mapper;
 
-        public LoanController(ILoanRepository loanRepo)
+        public LoanController(ILoanRepository loanRepo, IMapper mapper)
         {
             _loanRepo = loanRepo;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll() => Ok(await _loanRepo.GetAllAsync());
+        public async Task<IActionResult> GetAll()
+        {
+            var loans = await _loanRepo.GetAllAsync();
+            var dtos = _mapper.Map<IEnumerable<LoanReadDto>>(loans);
+            return Ok(dtos);
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
             var loan = await _loanRepo.GetAsync(id);
-            return loan != null ? Ok(loan) : NotFound();
+            if (loan == null) return NotFound();
+
+            var dto = _mapper.Map<LoanReadDto>(loan);
+            return Ok(dto);
         }
 
         [HttpGet("search")]
@@ -59,6 +70,8 @@ namespace LoanApplicationMonitor.API.Controllers
                 AdminComments = createDto.AdminComments,
                 UpdatedTime = DateTime.UtcNow
             };
+           
+            _mapper.Map<Loan>(createDto);
 
             try
             {
@@ -66,10 +79,10 @@ namespace LoanApplicationMonitor.API.Controllers
             }
             catch (DbUpdateException ex)
             {
-                throw new DataAccessException("Error saving Loan to the database.", ex);
+                throw new DataAccessException("Error saving new loan", ex);
             }
 
-            return Ok();
+            return CreatedAtAction(nameof(Get), new { id = loan.LoanId }, loan);
         }
 
         [HttpPut("{id}")]
@@ -78,7 +91,6 @@ namespace LoanApplicationMonitor.API.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var loanToUpdate = await _loanRepo.GetAsync(id);
-
             if (loanToUpdate == null) return NotFound();
 
             loanToUpdate.ApplicantFullName = updateDto.ApplicantFullName;
@@ -89,13 +101,15 @@ namespace LoanApplicationMonitor.API.Controllers
             loanToUpdate.LoanRequestReason = updateDto.LoanRequestReason;
             loanToUpdate.UpdatedTime = DateTime.UtcNow;
 
+            _mapper.Map(updateDto, loanToUpdate); 
+
             try
             {
                 await _loanRepo.UpdateAsync(loanToUpdate);
             }
             catch (DbUpdateException ex)
             {
-                throw new DataAccessException("Error saving Loan to the database.", ex);
+                throw new DataAccessException("Error saving Loan.", ex);
             }
 
             return NoContent();

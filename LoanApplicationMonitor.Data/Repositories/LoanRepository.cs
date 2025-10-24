@@ -18,7 +18,6 @@ namespace LoanApplicationMonitor.Data.Repositories
             _context = context;
         }
 
-        // todo - refactor search function is IQueryable the best approach? can filter checks be simplified?
         public async Task<List<Loan>> SearchLoansAsync(
             int? loanAmount,
             int? creditScore,

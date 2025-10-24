@@ -1,12 +1,11 @@
 using Azure.Identity;
 using Azure.Storage.Blobs;
 using LoanApplicationMonitor.API;
-using LoanApplicationMonitor.Core.Entities;
+using LoanApplicationMonitor.API.Mappers;
 using LoanApplicationMonitor.Core.Interfaces;
 using LoanApplicationMonitor.Data;
 using LoanApplicationMonitor.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,17 +40,10 @@ builder.Services.AddSingleton(sp =>
     return service.GetBlobContainerClient("healthmonitoringdata");
 });
 
-//var blobConnectionString = builder.Configuration["ConnectionStrings:HealthMonitoringDataConnection"];
-//var blobServiceClient = new BlobServiceClient(blobConnectionString);
-//var containerClient = blobServiceClient.GetBlobContainerClient("healthmonitoringdata");
-//var blobClient = containerClient.GetBlobClient("health-monitoring-messages.json");
-
-//using var stream = await blobClient.OpenReadAsync();
-//var healthMonitoringMessages = await JsonSerializer.DeserializeAsync<List<HealthMonitoringMessage>>(stream);
+builder.Services.AddAutoMapper(typeof(LoanMapperProfile).Assembly);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

@@ -1,4 +1,6 @@
-﻿using LoanApplicationMonitor.Core.Interfaces;
+﻿using AutoMapper;
+using LoanApplicationMonitor.API.Dtos;
+using LoanApplicationMonitor.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LoanApplicationMonitor.API.Controllers
@@ -7,14 +9,22 @@ namespace LoanApplicationMonitor.API.Controllers
     [Route("api/[controller]")]
     public class HealthMonitoringMessageController : Controller
     {
-        private readonly IHealthMonitoringRepository _repo;
-        public HealthMonitoringMessageController(IHealthMonitoringRepository repo) 
+        private readonly IHealthMonitoringRepository _healthRepo;
+        private readonly IMapper _mapper;
+
+        public HealthMonitoringMessageController(IHealthMonitoringRepository repo, IMapper mapper) 
         { 
-            _repo = repo;
+            _healthRepo = repo;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll() => Ok(await _repo.GetAllAsync());
+        public async Task<IActionResult> GetAll()
+        {
+            var messages = await _healthRepo.GetAllAsync();
+            var dtos = _mapper.Map<IEnumerable<HealthMonitoringMessageReadDto>>(messages);
+            return Ok(dtos);
+        }
 
     }
 }

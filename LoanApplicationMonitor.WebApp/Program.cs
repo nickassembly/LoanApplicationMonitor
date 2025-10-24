@@ -1,24 +1,32 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add Razor Pages
 builder.Services.AddRazorPages();
+
+var apiUrl = builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7203/";
+builder.Services.AddHttpClient("BackendApi", client =>
+{
+    client.BaseAddress = new Uri(apiUrl);
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthorization();
+
+app.MapGet("/", context =>
+{
+    context.Response.Redirect("/HealthMonitoringMessages");
+    return Task.CompletedTask;
+});
 
 app.MapRazorPages();
 
