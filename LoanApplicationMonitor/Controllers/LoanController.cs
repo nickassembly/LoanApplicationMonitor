@@ -3,10 +3,8 @@ using LoanApplicationMonitor.API.Dtos;
 using LoanApplicationMonitor.Core;
 using LoanApplicationMonitor.Core.Entities;
 using LoanApplicationMonitor.Core.Interfaces;
-using LoanApplicationMonitor.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace LoanApplicationMonitor.API.Controllers
 {
@@ -15,7 +13,7 @@ namespace LoanApplicationMonitor.API.Controllers
     public class LoanController : Controller
     {
         // Due to limited scope of business logic, repository is used directly in controller
-        // If business logic grows from this point, wrapping the repository in a service layer would likely make sense
+        // todo - wrap repository layer with service if business logic increases in complexity
         private readonly ILoanRepository _loanRepo;
         private readonly IMapper _mapper;
 

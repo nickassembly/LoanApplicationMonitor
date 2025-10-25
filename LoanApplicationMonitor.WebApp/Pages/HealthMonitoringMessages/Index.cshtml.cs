@@ -12,6 +12,11 @@ namespace LoanApplicationMonitor.WebApp.Pages.HealthMonitoringMessages
         private readonly ILogger<IndexModel> _logger;
         private readonly string _apiBaseUrl;
 
+        // todo - pagination should be moved to API if DB gets larger than a few hundred records
+        private const int PageSize = 25;
+        public int CurrentPage { get; set; } = 1;
+        public int TotalPages { get; set; }
+
         public IndexModel(IHttpClientFactory httpClientFactory, ILogger<IndexModel> logger, IConfiguration configuration)
         {
             _httpClientFactory = httpClientFactory;
@@ -21,8 +26,10 @@ namespace LoanApplicationMonitor.WebApp.Pages.HealthMonitoringMessages
 
         public List<HealthMonitoringMessageViewModel> HealthMonitoringMessages { get; set; } = new();
 
-        public async Task OnGetAsync()
+        public async Task OnGetAsync(int pageNumber = 1)
         {
+            CurrentPage = pageNumber;
+
             var client = _httpClientFactory.CreateClient("BackendApi");
             client.BaseAddress = new Uri(_apiBaseUrl);
 
@@ -34,14 +41,21 @@ namespace LoanApplicationMonitor.WebApp.Pages.HealthMonitoringMessages
 
                 if (apiResponse != null && apiResponse.Any())
                 {
-                    HealthMonitoringMessages = apiResponse.Select(dto => new HealthMonitoringMessageViewModel
-                    {
-                        id = dto.Id,
-                        systemName = dto.SystemName,
-                        statusValue = dto.StatusValue,
-                        systemMessage = dto.SystemMessage,
-                        testCompleted = dto.TestCompleted,
-                    }).ToList();
+                    var totalCount = apiResponse.Count();
+                    TotalPages = (int)Math.Ceiling(totalCount / (double)PageSize);
+
+                    HealthMonitoringMessages = apiResponse
+                        .Select(dto => new HealthMonitoringMessageViewModel
+                        {
+                            id = dto.Id,
+                            systemName = dto.SystemName,
+                            statusValue = dto.StatusValue,
+                            systemMessage = dto.SystemMessage,
+                            testCompleted = dto.TestCompleted,
+                        })
+                      .Skip((CurrentPage - 1) * PageSize)
+                      .Take(PageSize)
+                      .ToList();
                 }
                 else
                 {

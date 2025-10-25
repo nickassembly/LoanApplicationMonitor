@@ -12,6 +12,11 @@ namespace LoanApplicationMonitor.WebApp.Pages.Loans
         private readonly ILogger<IndexModel> _logger;
         private readonly string _apiBaseUrl;
         public string? ErrorMessage { get; set; }
+        private const int PageSize = 25;
+
+        // todo - pagination should be moved to API if DB gets larger than a few hundred records
+        public int CurrentPage { get; set; } = 1;
+        public int TotalPages { get; set; }
 
         public IndexModel(IHttpClientFactory httpClientFactory, ILogger<IndexModel> logger, IConfiguration configuration)
         {
@@ -22,8 +27,10 @@ namespace LoanApplicationMonitor.WebApp.Pages.Loans
 
         public List<LoanApplicationViewModel> Loans { get; set; } = new();
 
-        public async Task OnGetAsync(string? LoanType, string? LoanRequestReason, int? LoanAmount, string? AdminComments)
+        public async Task OnGetAsync(string? LoanType, string? LoanRequestReason, int? LoanAmount, string? AdminComments, int pageNumber = 1)
         {
+            CurrentPage = pageNumber;
+
             var client = _httpClientFactory.CreateClient("BackendApi");
             client.BaseAddress = new Uri(_apiBaseUrl);
 
@@ -54,17 +61,24 @@ namespace LoanApplicationMonitor.WebApp.Pages.Loans
 
                 if (apiResponse != null && apiResponse.Any())
                 {
-                    Loans = apiResponse.Select(dto => new LoanApplicationViewModel
-                    {
-                        loanId = dto.LoanId,
-                        applicantFullName = dto.ApplicantFullName,
-                        loanAmount = dto.LoanAmount,
-                        creditScore = dto.CreditScore,
-                        loanType = dto.LoanType,
-                        loanRequestReason = dto.LoanRequestReason,
-                        adminComments = dto.AdminComments,
-                        updatedTime = dto.UpdatedTime,
-                    }).ToList();
+                    var totalCount = apiResponse.Count();
+                    TotalPages = (int)Math.Ceiling(totalCount / (double)PageSize);
+
+                    Loans = apiResponse
+                        .Select(dto => new LoanApplicationViewModel
+                        {
+                            loanId = dto.LoanId,
+                            applicantFullName = dto.ApplicantFullName,
+                            loanAmount = dto.LoanAmount,
+                            creditScore = dto.CreditScore,
+                            loanType = dto.LoanType,
+                            loanRequestReason = dto.LoanRequestReason,
+                            adminComments = dto.AdminComments,
+                            updatedTime = dto.UpdatedTime,
+                        })
+                        .Skip((CurrentPage - 1) * PageSize)
+                        .Take(PageSize)
+                        .ToList();
                 }
                 else
                 {
