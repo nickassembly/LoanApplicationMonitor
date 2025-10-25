@@ -1,4 +1,5 @@
 ﻿@page
+@using System.Text.Json
 @model LoanApplicationMonitor.WebApp.Pages.Loans.IndexModel
 @{
     ViewData["Title"] = "Loans";
@@ -51,6 +52,7 @@ else
     <table class="table" id="loansTable">
         <thead>
             <tr>
+                <th>Select</th>
                 <th>Applicant</th>
                 <th>Credit Score</th>
                 <th>Loan Type</th>
@@ -63,13 +65,14 @@ else
         <tbody>
             @foreach (var loan in Model.Loans)
             {
-                <tr id="loan-@loan.loanId">
+                <tr id="@loan.loanId" data-loan='@System.Text.Json.JsonSerializer.Serialize(loan, new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })'>
+                    <td><input type="checkbox" class="compare-checkbox" /></td>
                     <td>@loan.applicantFullName</td>
-                    <td>@loan.creditScore</td>
-                    <td>@loan.loanType</td>
-                    <td>@loan.loanRequestReason</td>
-                    <td>@loan.loanAmount</td>
-                    <td>@loan.adminComments</td>
+                    <td class="field-creditScore">@loan.creditScore</td>
+                    <td class="field-loanType">@loan.loanType</td>
+                    <td class="field-requestReason">@loan.loanRequestReason</td>
+                    <td class="field-amount">@loan.loanAmount</td>
+                    <td class="field-comments">@loan.adminComments</td>
                     <td>@loan.updatedTime</td>
                     <td>
                         <button class="btn btn-warning btn-sm" type="button" onclick='openModal(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(loan, new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = null })))'>Edit</button>
@@ -192,6 +195,60 @@ else
         let createForm = document.getElementById("createForm");
         let updateForm = document.getElementById("updateForm");
 
+        document.addEventListener("DOMContentLoaded", () => {
+            const checkboxes = document.querySelectorAll(".compare-checkbox");
+
+            checkboxes.forEach(cb => cb.addEventListener("change", handleCompareSelection));
+
+            function handleCompareSelection() {
+                const selected = Array.from(document.querySelectorAll(".compare-checkbox:checked"));
+
+                // Clear any existing row highlights
+                document.querySelectorAll("#loansTable tr").forEach(tr => tr.classList.remove("active-compare-row"));
+                document.querySelectorAll("#loansTable td").forEach(td => td.classList.remove("match-cell"));
+
+                // If more than 2 are selected, keep only the last 2 checked
+                if (selected.length > 2) {
+                    checkboxes.forEach(cb => cb.checked = false);
+                    selected.slice(-2).forEach(cb => cb.checked = true);
+                }
+
+                // Get final selected rows
+                const finalSelected = Array.from(document.querySelectorAll(".compare-checkbox:checked"));
+                if (finalSelected.length !== 2) return;
+
+                const [rowA, rowB] = finalSelected.map(cb => cb.closest("tr"));
+                const loanA = JSON.parse(rowA.dataset.loan);
+                const loanB = JSON.parse(rowB.dataset.loan);
+
+                rowA.classList.add("active-compare-row");
+                rowB.classList.add("active-compare-row");
+
+                const fieldSelectors = {
+                    loanAmount: ".field-amount",
+                    creditScore: ".field-creditScore",
+                    loanType: ".field-loanType",
+                    loanRequestReason: ".field-requestReason",
+                    adminComments: ".field-comments"
+                };
+
+                for (const [key, selector] of Object.entries(fieldSelectors)) {
+                    const valueA = (loanA[key] ?? "").toString().trim();
+                    const valueB = (loanB[key] ?? "").toString().trim();
+
+                    // Highlight if both non-empty and match
+                    if (valueA && valueB && valueA.toLowerCase() === valueB.toLowerCase()) {
+                        const cellA = rowA.querySelector(selector);
+                        const cellB = rowB.querySelector(selector);
+                        if (cellA && cellB) {
+                            cellA.classList.add("match-cell");
+                            cellB.classList.add("match-cell");
+                        }
+                    }
+                }
+            }
+        });
+
         function openModal(loan = null) {
             modal.style.display = "block";
 
@@ -232,9 +289,11 @@ else
             updateForm.style.display = "none";
             createForm.style.display = "block";
             document.getElementById("modalTitle").innerText = "Copy Loan Record";
+            
             // Switch button text
             const createBtn = createForm.querySelector('button[type="submit"]');
             createBtn.textContent = "Save Copy";
+            
             // Clear any existing loan ID just to be safe
             createForm.querySelector('input[name="loanId"]').value = "";
 
@@ -247,4 +306,12 @@ else
             createForm.querySelector('input[name="CreditScore"]').value = creditScore;
         }
     </script>
+
+    <style>
+        /* Highlight cells with matching values */
+        .match-cell {
+            background-color: #fff3cd !important;
+            transition: background-color 0.3s ease;
+        }
+    </style>
 }

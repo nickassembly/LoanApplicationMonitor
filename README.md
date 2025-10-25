@@ -7,6 +7,8 @@
      * Edit - opens form with existing data populated for that record, changes can be made and saved, or cancelled without saving
      * Edit -> Copy As New - copies existing data (without applicant name) to a new form which can then be saved with a new applicant name to add as a new record
      * Error Messages - when attempting to add or update any records with invalid data (i.e. adding a name already in the database) an error message is shown
+* Compare Field Contents - click on 2 records to have highlights added to matching fields, 
+                           note: selecting more than 2 records will only compare the latest 2 records selected
 
 ## About this Demo
 * This solution is designed as an N-tier application using multiple data sources, which are consumed by a front end.
