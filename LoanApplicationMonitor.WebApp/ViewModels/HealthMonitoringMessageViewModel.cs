@@ -4,8 +4,10 @@ namespace LoanApplicationMonitor.WebApp.Models
 {
     public class HealthMonitoringMessageViewModel
     {
-        public string SystemName { get; set; } = string.Empty;
-        public StatusValue StatusValue { get; set; }
-        public string? SystemMessage { get; set; } = string.Empty;
+        public int id { get; set; }
+        public string systemName { get; set; } = string.Empty;
+        public StatusValue statusValue { get; set; }
+        public string? systemMessage { get; set; } = string.Empty;
+        public DateTime? testCompleted { get; set; }
     }
 }
