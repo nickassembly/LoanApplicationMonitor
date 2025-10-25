@@ -1,4 +1,4 @@
-﻿## Features
+﻿## Instructions
 * Navigate between System Health Monitoring Messages Page and Loan Application Page via top left navigation bar
 * System Message Page - View displays system health message status
      * Pagination - click bottom page navigation to view additional messages
