@@ -11,11 +11,5 @@ namespace LoanApplicationMonitor.WebApp.Models
         public string? loanRequestReason { get; set; } = string.Empty;
         public string? adminComments { get; set; } = string.Empty;
         public DateTime? updatedTime { get; set; }
-
-        // UI Specific Models
-        //public bool isSelected { get; set; }
-        //public bool isEditing { get; set; }
-        //public string validationMessage { get; set; } = string.Empty;
-
     }
 }

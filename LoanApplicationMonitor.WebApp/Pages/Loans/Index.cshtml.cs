@@ -14,7 +14,7 @@ namespace LoanApplicationMonitor.WebApp.Pages.Loans
         public string? ErrorMessage { get; set; }
         private const int PageSize = 25;
 
-        // todo - pagination should be moved to API if DB gets larger than a few hundred records
+        // todo (future) - pagination should be moved to API if DB gets larger than a few hundred records
         public int CurrentPage { get; set; } = 1;
         public int TotalPages { get; set; }
 

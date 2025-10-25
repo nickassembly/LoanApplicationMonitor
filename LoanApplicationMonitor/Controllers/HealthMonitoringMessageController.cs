@@ -25,6 +25,5 @@ namespace LoanApplicationMonitor.API.Controllers
             var dtos = _mapper.Map<IEnumerable<HealthMonitoringMessageReadDto>>(messages);
             return Ok(dtos);
         }
-
     }
 }

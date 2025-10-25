@@ -12,7 +12,7 @@ namespace LoanApplicationMonitor.WebApp.Pages.HealthMonitoringMessages
         private readonly ILogger<IndexModel> _logger;
         private readonly string _apiBaseUrl;
 
-        // todo - pagination should be moved to API if DB gets larger than a few hundred records
+        // todo (future) - pagination should be moved to API if DB gets larger than a few hundred records
         private const int PageSize = 25;
         public int CurrentPage { get; set; } = 1;
         public int TotalPages { get; set; }
@@ -68,7 +68,6 @@ namespace LoanApplicationMonitor.WebApp.Pages.HealthMonitoringMessages
                 _logger.LogError(ex, "Error fetching health monitoring messages from API");
                 HealthMonitoringMessages = new List<HealthMonitoringMessageViewModel>();
             }
-
         }
     }
 }

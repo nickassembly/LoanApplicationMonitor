@@ -30,5 +30,4 @@ namespace LoanApplicationMonitor.API.Dtos
         [MaxLength(1000, ErrorMessage = "Full name cannot exceed 1000 characters.")]
         public string? AdminComments { get; set; }
     }
-
 }

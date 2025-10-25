@@ -158,6 +158,7 @@ else
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="button" class="btn btn-info" onclick="copyAsNew()">Copy as New</button>
                     <button type="submit" class="btn btn-primary">Update</button>
                 </div>
             </form>
@@ -217,6 +218,33 @@ else
 
         function closeModal() {
             modal.style.display = "none";
+        }
+
+        function copyAsNew() {
+            // Get data from update form
+            const loanType = document.getElementById("updateLoanType").value;
+            const loanRequestReason = document.getElementById("updateLoanRequestReason").value;
+            const loanAmount = document.getElementById("updateLoanAmount").value;
+            const adminComments = document.getElementById("updateAdminComments").value;
+            const creditScore = document.getElementById("updateCreditScore").value;
+
+            // Switch modal mode
+            updateForm.style.display = "none";
+            createForm.style.display = "block";
+            document.getElementById("modalTitle").innerText = "Copy Loan Record";
+            // Switch button text
+            const createBtn = createForm.querySelector('button[type="submit"]');
+            createBtn.textContent = "Save Copy";
+            // Clear any existing loan ID just to be safe
+            createForm.querySelector('input[name="loanId"]').value = "";
+
+            // Prefill fields in create form
+            createForm.querySelector('input[name="ApplicantFullName"]').value = "New Applicant Name"; 
+            createForm.querySelector('input[name="LoanType"]').value = loanType;
+            createForm.querySelector('input[name="LoanRequestReason"]').value = loanRequestReason;
+            createForm.querySelector('input[name="LoanAmount"]').value = loanAmount;
+            createForm.querySelector('input[name="AdminComments"]').value = adminComments;
+            createForm.querySelector('input[name="CreditScore"]').value = creditScore;
         }
     </script>
 }

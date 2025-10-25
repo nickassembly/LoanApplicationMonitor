@@ -13,6 +13,4 @@ namespace LoanApplicationMonitor.API.Mappers
             CreateMap<LoanUpdateDto, Loan>();
         }
     }
-
-
 }

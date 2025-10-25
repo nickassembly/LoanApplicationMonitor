@@ -9,16 +9,15 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllers();
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// register repos
 builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 builder.Services.AddScoped<IHealthMonitoringRepository, HealthMonitoringRepository>();
 
+// configure KV for Azure resources
 var vaultUri = builder.Configuration["AzureKeyVault:VaultUri"];
 if (!string.IsNullOrEmpty(vaultUri))
 {
@@ -33,6 +32,7 @@ var connString = builder.Configuration["ConnectionStrings:LoanApplicationDbConne
 builder.Services.AddDbContext<LoanApplicationDbContext>(options =>
         options.UseSqlServer(connString));
 
+// configure Blob Storage client (JSON file to handle Health monitoring messages)
 builder.Services.AddSingleton(sp =>
 {
     var storageBlobConnection = builder.Configuration["ConnectionStrings:HealthMonitoringDataConnection"];

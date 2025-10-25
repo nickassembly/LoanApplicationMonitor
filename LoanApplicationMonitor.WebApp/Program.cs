@@ -1,8 +1,8 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Add Razor Pages
 builder.Services.AddRazorPages();
 
+// register api http client
 var apiUrl = builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7203/";
 builder.Services.AddHttpClient("BackendApi", client =>
 {
