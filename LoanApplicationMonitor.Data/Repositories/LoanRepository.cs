@@ -1,11 +1,6 @@
 ﻿using LoanApplicationMonitor.Core.Entities;
 using LoanApplicationMonitor.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LoanApplicationMonitor.Data.Repositories
 {
@@ -26,7 +21,7 @@ namespace LoanApplicationMonitor.Data.Repositories
             string? adminComments)
         {
 
-            IQueryable<Loan> query = _context.Loan.AsQueryable();
+            IQueryable<Loan> query = _context.Loans.AsQueryable();
 
 
             if (loanAmount.HasValue)
@@ -49,32 +44,32 @@ namespace LoanApplicationMonitor.Data.Repositories
 
         public async Task<List<Loan>> GetAllAsync()
         {
-            return await _context.Loan.ToListAsync();
+            return await _context.Loans.ToListAsync();
         }
 
         public async Task<Loan?> GetAsync(int loanId)
         {
-            return await _context.Loan.FindAsync(loanId);
+            return await _context.Loans.FindAsync(loanId);
         }
 
         public async Task AddAsync(Loan record)
         {
-            _context.Loan.Add(record);
+            _context.Loans.Add(record);
             await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Loan record)
         {
-            _context.Loan.Update(record);
+            _context.Loans.Update(record);
             await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
         {
-            var loan = await _context.Loan.FindAsync(id);
+            var loan = await _context.Loans.FindAsync(id);
             if (loan != null)
             {
-                _context.Loan.Remove(loan);
+                _context.Loans.Remove(loan);
                 await _context.SaveChangesAsync();
             }
         }

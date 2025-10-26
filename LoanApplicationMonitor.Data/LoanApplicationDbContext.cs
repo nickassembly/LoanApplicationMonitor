@@ -1,4 +1,4 @@
-﻿using LoanApplicationMonitor.Core.Entities;
+﻿using LoanApplicationMonitor.Core.Entities; // adjust namespace
 using Microsoft.EntityFrameworkCore;
 
 namespace LoanApplicationMonitor.Data
@@ -10,14 +10,38 @@ namespace LoanApplicationMonitor.Data
         {
         }
 
-        public DbSet<Loan> Loan { get; set; }
+        public DbSet<Loan> Loans { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Loan>(entity =>
             {
-                optionsBuilder.UseSqlServer();
-            }
+                entity.ToTable("Loans");
+
+                entity.HasKey(e => e.LoanId);
+
+                entity.Property(e => e.ApplicantFullName)
+                      .HasMaxLength(100)
+                      .IsRequired();
+
+                entity.Property(e => e.LoanAmount)
+                      .IsRequired();
+
+                entity.Property(e => e.CreditScore);
+
+                entity.Property(e => e.LoanType)
+                      .HasMaxLength(100);
+
+                entity.Property(e => e.LoanRequestReason)
+                      .HasMaxLength(1000);
+
+                entity.Property(e => e.AdminComments)
+                     .HasMaxLength(1000);
+
+                entity.Property(e => e.UpdatedTime);
+            });
         }
     }
 }

@@ -9,38 +9,72 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// register repos
 builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 builder.Services.AddScoped<IHealthMonitoringRepository, HealthMonitoringRepository>();
 
-// configure KV for Azure resources
+builder.Services.AddAutoMapper(typeof(LoanMapperProfile).Assembly);
+
+// service to run data seeding in the background for both MSSQL Db and blob storage
+builder.Services.AddHostedService<StartupInitializationService>();
+
+// key vault configuration for non-dev environments
 var vaultUri = builder.Configuration["AzureKeyVault:VaultUri"];
-if (!string.IsNullOrEmpty(vaultUri))
+if (!string.IsNullOrEmpty(vaultUri) && !builder.Environment.IsDevelopment())
 {
     builder.Configuration.AddAzureKeyVault(new Uri(vaultUri), new DefaultAzureCredential());
+    Console.WriteLine("Loaded secrets from Azure Key Vault");
 }
 else
 {
-    Console.WriteLine("Azure Key Vault URI is not configured.");
+    Console.WriteLine("Skipping Azure Key Vault (Development or VaultUri not set)");
 }
 
-var connString = builder.Configuration["ConnectionStrings:LoanApplicationDbConnection"];
-builder.Services.AddDbContext<LoanApplicationDbContext>(options =>
-        options.UseSqlServer(connString));
+var connString = builder.Configuration.GetConnectionString("LoanApplicationDbConnection")
+    ?? throw new InvalidOperationException("Missing DB connection string.");
 
-// configure Blob Storage client (JSON file to handle Health monitoring messages)
+builder.Services.AddDbContext<LoanApplicationDbContext>(options =>
+    options.UseSqlServer(connString, sql => sql.EnableRetryOnFailure()));
+
+// blob storage for health message monitoring data
 builder.Services.AddSingleton(sp =>
 {
-    var storageBlobConnection = builder.Configuration["ConnectionStrings:HealthMonitoringDataConnection"];
-    var service = new BlobServiceClient(storageBlobConnection);
-    return service.GetBlobContainerClient("healthmonitoringdata");
-});
+    var config = sp.GetRequiredService<IConfiguration>();
+    var blobConn = config.GetConnectionString("HealthMonitoringDataConnection")
+                   ?? throw new InvalidOperationException("Blob Storage connection string missing.");
+    var containerName = config["BlobStorage:ContainerName"] ?? "healthmonitoringdata";
 
-builder.Services.AddAutoMapper(typeof(LoanMapperProfile).Assembly);
+    var blobServiceClient = new BlobServiceClient(blobConn);
+    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+    // retry logic to mitigate slowness on initial connection
+    const int maxRetries = 5;
+    for (int i = 0; i < maxRetries; i++)
+    {
+        try
+        {
+            containerClient.CreateIfNotExists();
+            Console.WriteLine($"Blob container '{containerName}' ready at {containerClient.Uri}");
+            return containerClient;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Attempt {i + 1}/{maxRetries} - Could not connect to Blob Storage: {ex.Message}");
+            if (i < maxRetries - 1)
+                Thread.Sleep(2000);
+        }
+    }
+
+    throw new InvalidOperationException("Failed to connect to Blob Storage after multiple attempts.");
+});
 
 var app = builder.Build();
 
@@ -51,11 +85,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.UseMiddleware<ExceptionMiddleware>();
-
 app.MapControllers();
 
 app.Run();
