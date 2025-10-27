@@ -23,9 +23,12 @@ azurite --location ./.azurite
 
 ```
 
-3 - Set Visual Studio to Run API and WebApp Project on Start up
+3 - Set to Run Multiple Projects
      * right-click `LoanApplicationMonitor` solution --> properties 
-     * multiple start-up projects `LoanApplicationMonitor.Api set to Start` `LoanApplicationMonitor.WebApp set to Start` click apply / ok
+          * multiple start-up projects:
+          * `LoanApplicationMonitor.Api` set to Start
+          * `LoanApplicationMonitor.WebApp` set to Start
+          * click apply / ok
           
 4 - Start Project (F5) to start API and WebApp together
      * Initial Page may be empty during data seeding, once sample data has been seeded API will display and can be accessed through Swagger Docs
