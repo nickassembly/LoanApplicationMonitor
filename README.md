@@ -10,10 +10,11 @@ npm install --save-dev azurite
 ```
 
 [Azurite emulator for development](https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite)
-Note: Azurite v3 requires [Node](https://nodejs.org/en) version 18 (or higher)
+  Azurite v3 requires [Node](https://nodejs.org/en) version 18 (or higher)
 
 ```
-node -v (verify 18+)
+# verify version
+node -v 
 ```
 2 - Run the command to start azurite in the project directory
 
@@ -23,25 +24,24 @@ azurite --location ./.azurite
 ```
 
 3 - Set Visual Studio to Run API and WebApp Project on Start up
-          --> right-click `LoanApplicationMonitor` solution --> properties 
-          --> multiple start-up projects `LoanApplicationMonitor.Api set to Start` `LoanApplicationMonitor.WebApp set to Start` click apply / ok
+     * right-click `LoanApplicationMonitor` solution --> properties 
+     * multiple start-up projects `LoanApplicationMonitor.Api set to Start` `LoanApplicationMonitor.WebApp set to Start` click apply / ok
           
 4 - Start Project (F5) to start API and WebApp together
-    Note : Initial Page may be empty during data seeding, once sample data has been seeded API will display and can be accessed through Swagger Docs
-           Tabbing away from Swagger UI Page will bring you back to WebApp UI with updated sample data.
-           LoanDemoDB is spun up locally as part of startup process and can be inspected to view sample data as well as schema info.
+     * Initial Page may be empty during data seeding, once sample data has been seeded API will display and can be accessed through Swagger Docs
+     * Tabbing away from Swagger UI Page will bring you back to WebApp UI with updated sample data.
+     * LoanDemoDB is spun up locally as part of startup process and can be inspected to view sample data as well as schema info.
 
 ## Features
 * Navigate between System Health Monitoring Messages Page (Dashboard Read-Only) and Loan Application Page (CRUD app) via top left navigation bar
 * System Message Page - View displays system health message status
-     * Pagination - click bottom page navigation to view additional messages
+     * **Pagination** - click bottom page navigation to view additional messages
 * Loan Application Page - View displays loan application status
-     * Add New Loan button - click to open form to add a new loan application, save to save record, cancel closes without saving
-     * Edit - opens form with existing data populated for that record, changes can be made and saved, or cancelled without saving
-     * Edit -> Copy As New - copies existing data (without applicant name) to a new form which can then be saved with a new applicant name to add as a new record
+     * `Add New` - click to open form to add a new loan application, save to save record, cancel closes without saving
+     * `Edit` - opens form with existing data populated for that record, changes can be made with `Save`, or `Cancel` without saving
+     * `Edit` - `Copy As New` - copies existing data (without applicant name) to a new form which can then be saved with a new applicant name to add as a new record
      * Error Messages - when attempting to add or update any records with invalid data (i.e. adding a name already in the database) an error message is shown
-* Compare Field Contents - click on 2 records to have highlights added to matching fields, 
-                           note: selecting more than 2 records will only compare the latest 2 records selected
+     * `Select` to compare 2 records - click on 2 records to have highlights added to matching fields *selecting more than 2 records will only compare the latest 2 records selected*
 
 ## Notes on Solution Architecture
 * This solution is designed as an N-tier application using multiple data sources, which are consumed by a front end.
