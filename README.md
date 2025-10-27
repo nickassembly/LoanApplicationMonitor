@@ -1,13 +1,35 @@
 ﻿## Setup Instructions
-* After cloning repo, you will need to run `azurite` in a terminal in the directory of the cloned project.  
-  Azurite is an emulation service that allows for emulating Azure blob storage and will allow the program to seed test data in development
+1 - Install npm package `azurite v3` package from project root folder
+  [Azurite](https://www.npmjs.com/package/azurite) is an open source emulator used to simulate azure storage with minimal dependencies
 
-* Run the command below -- you should see a response similar to ... "Azure blob service is starting at http:127.0.0.1:10000"
+```
+# Visual Studio: tools - command line - open developer command prompt (or separate bash terminal)
+# navigate to ../ApplicationMonitor (root of project)
+
+npm install --save-dev azurite
+```
+
+[Azurite emulator for development](https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite)
+Note: Azurite v3 requires [Node](https://nodejs.org/en) version 18 (or higher)
+
+```
+node -v (verify 18+)
+```
+2 - Run the command to start azurite in the project directory
+
 ```
 azurite --location ./.azurite
+
 ```
-* After azurite is running, you can run the cloned project in visual studio and it will start up the API and WebApp projects, as well as
-  create seed data for both data sources, a local DB in MSSQLDB--LoanDemoDB for the Loan API and the Blob `.json` data for the HealthMonitoringMessage API.
+
+3 - Set Visual Studio to Run API and WebApp Project on Start up
+          --> right-click `LoanApplicationMonitor` solution --> properties 
+          --> multiple start-up projects `LoanApplicationMonitor.Api set to Start` `LoanApplicationMonitor.WebApp set to Start` click apply / ok
+          
+4 - Start Project (F5) to start API and WebApp together
+    Note : Initial Page may be empty during data seeding, once sample data has been seeded API will display and can be accessed through Swagger Docs
+           Tabbing away from Swagger UI Page will bring you back to WebApp UI with updated sample data.
+           LoanDemoDB is spun up locally as part of startup process and can be inspected to view sample data as well as schema info.
 
 ## Features
 * Navigate between System Health Monitoring Messages Page (Dashboard Read-Only) and Loan Application Page (CRUD app) via top left navigation bar
@@ -29,10 +51,8 @@ azurite --location ./.azurite
 
 **UI Layer** - Razor pages used in this case due to limited state changes and ease of demo, however, a separate SPA project (i.e. React) could be 
                created as part of a future iteration which could consume the same APIs without needing to update the back end.
-
 **Test Layer** - Separate xUnit Test project included which references .Core and .API and holds basic unit tests
 
-## Solution Structure
 ```
    ┌───────────────────────────────┐
    │           UI Layer            │
