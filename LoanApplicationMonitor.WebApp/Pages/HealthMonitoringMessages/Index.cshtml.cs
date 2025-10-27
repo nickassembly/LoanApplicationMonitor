@@ -1,8 +1,6 @@
-using LoanApplicationMonitor.API.Dtos;
+using LoanApplicationMonitor.Core.Entities;
 using LoanApplicationMonitor.WebApp.Models;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Net.Http;
 
 namespace LoanApplicationMonitor.WebApp.Pages.HealthMonitoringMessages
 {
@@ -12,7 +10,6 @@ namespace LoanApplicationMonitor.WebApp.Pages.HealthMonitoringMessages
         private readonly ILogger<IndexModel> _logger;
         private readonly string _apiBaseUrl;
 
-        // todo (future) - pagination should be moved to API if DB gets larger than a few hundred records
         private const int PageSize = 25;
         public int CurrentPage { get; set; } = 1;
         public int TotalPages { get; set; }
@@ -37,7 +34,7 @@ namespace LoanApplicationMonitor.WebApp.Pages.HealthMonitoringMessages
 
             try
             {
-                var apiResponse = await client.GetFromJsonAsync<List<HealthMonitoringMessageReadDto>>(url);
+                var apiResponse = await client.GetFromJsonAsync<List<HealthMonitoringMessage>>(url);
 
                 if (apiResponse != null && apiResponse.Any())
                 {
