@@ -14,6 +14,18 @@ builder.Configuration
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 
+// key vault configuration for non-dev environments
+var vaultUri = builder.Configuration["AzureKeyVault:VaultUri"];
+if (!string.IsNullOrEmpty(vaultUri) && !builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddAzureKeyVault(new Uri(vaultUri), new DefaultAzureCredential());
+    Console.WriteLine("Loaded secrets from Azure Key Vault");
+}
+else
+{
+    Console.WriteLine("Skipping Azure Key Vault (Development or VaultUri not set)");
+}
+
 // TODO - update config for azure hosting
 //if (builder.Environment.IsProduction())
 //{
@@ -35,20 +47,17 @@ builder.Services.AddScoped<IHealthMonitoringRepository, HealthMonitoringReposito
 
 builder.Services.AddAutoMapper(typeof(LoanMapperProfile).Assembly);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("WebAppPolicy", policy =>
+        policy.WithOrigins("https://loanapplicationmonitor-webapp.azurewebsites.net")
+              .AllowAnyHeader()
+              .AllowAnyMethod());
+});
+
 // service to run data seeding in the background for both MSSQL Db and blob storage
 builder.Services.AddHostedService<StartupInitializationService>();
 
-// key vault configuration for non-dev environments
-var vaultUri = builder.Configuration["AzureKeyVault:VaultUri"];
-if (!string.IsNullOrEmpty(vaultUri) && !builder.Environment.IsDevelopment())
-{
-    builder.Configuration.AddAzureKeyVault(new Uri(vaultUri), new DefaultAzureCredential());
-    Console.WriteLine("Loaded secrets from Azure Key Vault");
-}
-else
-{
-    Console.WriteLine("Skipping Azure Key Vault (Development or VaultUri not set)");
-}
 
 var connString = builder.Configuration.GetConnectionString("LoanApplicationDbConnection")
     ?? throw new InvalidOperationException("Missing DB connection string.");
@@ -100,5 +109,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseMiddleware<ExceptionMiddleware>();
 app.MapControllers();
+app.UseCors("WebAppPolicy");
 
 app.Run();
