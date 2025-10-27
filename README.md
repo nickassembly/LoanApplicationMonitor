@@ -41,7 +41,8 @@ azurite --location ./.azurite
      * `Edit` - opens form with existing data populated for that record, changes can be made with `Save`, or `Cancel` without saving
      * `Edit` - `Copy As New` - copies existing data (without applicant name) to a new form which can then be saved with a new applicant name to add as a new record
      * Error Messages - when attempting to add or update any records with invalid data (i.e. adding a name already in the database) an error message is shown
-     * `Select` to compare 2 records - click on 2 records to have highlights added to matching fields *selecting more than 2 records will only compare the latest 2 records selected*
+     * `Select` to compare 2 records - click on 2 records to have highlights added to matching fields 
+          * *selecting more than 2 records will only compare the latest 2 records selected*
 
 ## Notes on Solution Architecture
 * This solution is designed as an N-tier application using multiple data sources, which are consumed by a front end.
