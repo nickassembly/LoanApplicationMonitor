@@ -14,6 +14,18 @@ builder.Configuration
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 
+// TODO - update config for azure hosting
+//if (builder.Environment.IsProduction())
+//{
+//    var keyVaultUri = builder.Configuration["AzureKeyVault:VaultUri"];
+//    if (!string.IsNullOrEmpty(keyVaultUri))
+//    {
+//        builder.Configuration.AddAzureKeyVault(
+//            new Uri(keyVaultUri),
+//            new DefaultAzureCredential());
+//    }
+//}
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
