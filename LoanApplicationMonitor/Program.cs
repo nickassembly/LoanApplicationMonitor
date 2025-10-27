@@ -26,18 +26,6 @@ else
     Console.WriteLine("Skipping Azure Key Vault (Development or VaultUri not set)");
 }
 
-// TODO - update config for azure hosting
-//if (builder.Environment.IsProduction())
-//{
-//    var keyVaultUri = builder.Configuration["AzureKeyVault:VaultUri"];
-//    if (!string.IsNullOrEmpty(keyVaultUri))
-//    {
-//        builder.Configuration.AddAzureKeyVault(
-//            new Uri(keyVaultUri),
-//            new DefaultAzureCredential());
-//    }
-//}
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -56,8 +44,7 @@ builder.Services.AddCors(options =>
 });
 
 // service to run data seeding in the background for both MSSQL Db and blob storage
-builder.Services.AddHostedService<StartupInitializationService>();
-
+ // builder.Services.AddHostedService<StartupInitializationService>();
 
 var connString = builder.Configuration.GetConnectionString("LoanApplicationDbConnection")
     ?? throw new InvalidOperationException("Missing DB connection string.");

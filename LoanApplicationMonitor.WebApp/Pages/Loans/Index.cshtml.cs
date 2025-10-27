@@ -1,4 +1,3 @@
-using LoanApplicationMonitor.API.Dtos;
 using LoanApplicationMonitor.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -57,7 +56,7 @@ namespace LoanApplicationMonitor.WebApp.Pages.Loans
 
             try
             {
-                var apiResponse = await client.GetFromJsonAsync<List<LoanReadDto>>(url);
+                var apiResponse = await client.GetFromJsonAsync<List<LoanApplicationViewModel>>(url);
 
                 if (apiResponse != null && apiResponse.Any())
                 {
@@ -67,14 +66,14 @@ namespace LoanApplicationMonitor.WebApp.Pages.Loans
                     Loans = apiResponse
                         .Select(dto => new LoanApplicationViewModel
                         {
-                            loanId = dto.LoanId,
-                            applicantFullName = dto.ApplicantFullName,
-                            loanAmount = dto.LoanAmount,
-                            creditScore = dto.CreditScore,
-                            loanType = dto.LoanType,
-                            loanRequestReason = dto.LoanRequestReason,
-                            adminComments = dto.AdminComments,
-                            updatedTime = dto.UpdatedTime,
+                            loanId = dto.loanId,
+                            applicantFullName = dto.applicantFullName,
+                            loanAmount = dto.loanAmount,
+                            creditScore = dto.creditScore,
+                            loanType = dto.loanType,
+                            loanRequestReason = dto.loanRequestReason,
+                            adminComments = dto.adminComments,
+                            updatedTime = dto.updatedTime,
                         })
                         .Skip((CurrentPage - 1) * PageSize)
                         .Take(PageSize)
@@ -93,7 +92,7 @@ namespace LoanApplicationMonitor.WebApp.Pages.Loans
             }
         }
 
-        public async Task<IActionResult> OnPostCreateAsync(LoanCreateDto newLoan)
+        public async Task<IActionResult> OnPostCreateAsync(LoanApplicationViewModel newLoan)
         {
             var client = _httpClientFactory.CreateClient();
             client.BaseAddress = new Uri(_apiBaseUrl);
@@ -113,11 +112,11 @@ namespace LoanApplicationMonitor.WebApp.Pages.Loans
             return RedirectToPage();
         }
 
-        public async Task<IActionResult> OnPostUpdateAsync(LoanUpdateDto updatedLoan)
+        public async Task<IActionResult> OnPostUpdateAsync(LoanApplicationViewModel updatedLoan)
         {
             var client = _httpClientFactory.CreateClient();
             client.BaseAddress = new Uri(_apiBaseUrl);
-            var response = await client.PutAsJsonAsync($"api/Loan/{updatedLoan.LoanId}", updatedLoan);
+            var response = await client.PutAsJsonAsync($"api/Loan/{updatedLoan.loanId}", updatedLoan);
 
             if (!response.IsSuccessStatusCode)
             {
