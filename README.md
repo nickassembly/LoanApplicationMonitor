@@ -1,4 +1,5 @@
 ﻿## Setup Instructions
+* Clone the project on your local machine, and navigate to the project directory after cloning, `../LoanApplicationMonitor`
 * Install npm package `azurite v3` package from project root folder
   [Azurite](https://www.npmjs.com/package/azurite) is an open source emulator used to simulate azure storage with minimal dependencies
 
