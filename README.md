@@ -1,5 +1,5 @@
 ﻿## Setup Instructions
-1 - Install npm package `azurite v3` package from project root folder
+* Install npm package `azurite v3` package from project root folder
   [Azurite](https://www.npmjs.com/package/azurite) is an open source emulator used to simulate azure storage with minimal dependencies
 
 ```
@@ -16,21 +16,21 @@ npm install --save-dev azurite
 # verify version
 node -v 
 ```
-2 - Run the command to start azurite in the project directory
+* Run the command to start azurite in the project directory
 
 ```
 azurite --location ./.azurite
 
 ```
 
-3 - Set to Run Multiple Projects
+* Set to Run Multiple Projects
      * right-click `LoanApplicationMonitor` solution --> properties 
-          * multiple start-up projects:
-          * `LoanApplicationMonitor.Api` set to Start
-          * `LoanApplicationMonitor.WebApp` set to Start
-          * click apply / ok
+     * multiple start-up projects:
+     * `LoanApplicationMonitor.Api` set to Start
+     * `LoanApplicationMonitor.WebApp` set to Start
+     * click apply / ok
           
-4 - Start Project (F5) to start API and WebApp together
+* Start Project (F5) to start API and WebApp together
      * Initial Page may be empty during data seeding, once sample data has been seeded API will display and can be accessed through Swagger Docs
      * Tabbing away from Swagger UI Page will bring you back to WebApp UI with updated sample data.
      * LoanDemoDB is spun up locally as part of startup process and can be inspected to view sample data as well as schema info.
