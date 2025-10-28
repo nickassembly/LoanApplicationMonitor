@@ -1,40 +1,8 @@
 ﻿## Setup Instructions
 * Clone the project on your local machine, and navigate to the project directory after cloning, `../LoanApplicationMonitor`
-* Install npm package `azurite v3` package from project root folder
-  [Azurite](https://www.npmjs.com/package/azurite) is an open source emulator used to simulate azure storage with minimal dependencies
-
-```
-# Visual Studio: tools - command line - open developer command prompt (or separate bash terminal)
-# navigate to ../ApplicationMonitor (root of project)
-
-npm install --save-dev azurite
-```
-
-[Azurite emulator for development](https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite)
-  Azurite v3 requires [Node](https://nodejs.org/en) version 18 (or higher)
-
-```
-# verify version
-node -v 
-```
-* Run the command to start azurite in the project directory
-
-```
-azurite --location ./.azurite
-
-```
-
-* Set to Run Multiple Projects
-     * right-click `LoanApplicationMonitor` solution --> properties 
-     * multiple start-up projects:
-     * `LoanApplicationMonitor.Api` set to Start
-     * `LoanApplicationMonitor.WebApp` set to Start
-     * click apply / ok
+* Set `LoanApplicationMonitor.WebApp` as the start up project
           
-* Start Project (F5) to start API and WebApp together
-     * Initial Page may be empty during data seeding, once sample data has been seeded API will display and can be accessed through Swagger Docs
-     * Tabbing away from Swagger UI Page will bring you back to WebApp UI with updated sample data.
-     * LoanDemoDB is spun up locally as part of startup process and can be inspected to view sample data as well as schema info.
+* Start Project (F5) - Initial page load will be populated with data from API project, which is hosted separately on Azure
 
 ## Features
 * Navigate between System Health Monitoring Messages Page (Dashboard Read-Only) and Loan Application Page (CRUD app) via top left navigation bar
