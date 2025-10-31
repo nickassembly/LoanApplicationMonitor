@@ -1,4 +1,3 @@
-using LoanApplicationMonitor.Core.Entities;
 using LoanApplicationMonitor.WebApp.Models;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -34,7 +33,7 @@ namespace LoanApplicationMonitor.WebApp.Pages.HealthMonitoringMessages
 
             try
             {
-                var apiResponse = await client.GetFromJsonAsync<List<HealthMonitoringMessage>>(url);
+                var apiResponse = await client.GetFromJsonAsync<List<HealthMonitoringMessageViewModel>>(url);
 
                 if (apiResponse != null && apiResponse.Any())
                 {
@@ -44,11 +43,11 @@ namespace LoanApplicationMonitor.WebApp.Pages.HealthMonitoringMessages
                     HealthMonitoringMessages = apiResponse
                         .Select(dto => new HealthMonitoringMessageViewModel
                         {
-                            id = dto.Id,
-                            systemName = dto.SystemName,
-                            statusValue = dto.StatusValue,
-                            systemMessage = dto.SystemMessage,
-                            testCompleted = dto.TestCompleted,
+                            id = dto.id,
+                            systemName = dto.systemName,
+                            statusValue = dto.statusValue,
+                            systemMessage = dto.systemMessage,
+                            testCompleted = dto.testCompleted,
                         })
                       .Skip((CurrentPage - 1) * PageSize)
                       .Take(PageSize)

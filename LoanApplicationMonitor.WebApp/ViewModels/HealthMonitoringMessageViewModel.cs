@@ -1,4 +1,10 @@
-﻿using LoanApplicationMonitor.Core.Entities;
+﻿
+public enum StatusValue
+{
+    pass,
+    fail,
+    warning
+}
 
 namespace LoanApplicationMonitor.WebApp.Models
 {
