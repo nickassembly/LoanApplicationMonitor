@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "secrets1": {
+    "secrets2": {
       "type": "secrets",
-      "connectionId": "AzureKeyVault:VaultUri",
+      "connectionId": "VaultUri",
       "dynamicId": null
     }
   }
