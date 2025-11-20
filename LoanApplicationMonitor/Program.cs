@@ -14,17 +14,18 @@ builder.Configuration
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 
-// key vault configuration for non-dev environments
 var vaultUri = builder.Configuration["AzureKeyVault:VaultUri"];
-if (!string.IsNullOrEmpty(vaultUri) && !builder.Environment.IsDevelopment())
+if (!string.IsNullOrEmpty(vaultUri))
 {
     builder.Configuration.AddAzureKeyVault(new Uri(vaultUri), new DefaultAzureCredential());
-    Console.WriteLine("Loaded secrets from Azure Key Vault");
 }
 else
 {
-    Console.WriteLine("Skipping Azure Key Vault (Development or VaultUri not set)");
+    Console.WriteLine("Azure Key Vault URI is not configured.");
 }
+
+var connString = builder.Configuration["ConnectionStrings:CloudGuerraTechNowDbConnection"] 
+    ?? throw new InvalidOperationException("Missing DB connection string.");
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -43,15 +44,10 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 
-// service to run data seeding in the background for both MSSQL Db and blob storage
- // builder.Services.AddHostedService<StartupInitializationService>();
-
-var connString = builder.Configuration.GetConnectionString("LoanApplicationDbConnection")
-    ?? throw new InvalidOperationException("Missing DB connection string.");
-
 builder.Services.AddDbContext<LoanApplicationDbContext>(options =>
     options.UseSqlServer(connString, sql => sql.EnableRetryOnFailure()));
 
+// TODO -- update to use health message in sql table for azure branch
 // blob storage for health message monitoring data
 builder.Services.AddSingleton(sp =>
 {

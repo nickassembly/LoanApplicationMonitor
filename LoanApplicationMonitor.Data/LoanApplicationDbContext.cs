@@ -18,7 +18,7 @@ namespace LoanApplicationMonitor.Data
 
             modelBuilder.Entity<Loan>(entity =>
             {
-                entity.ToTable("Loans");
+                entity.ToTable("Loans", "loan");
 
                 entity.HasKey(e => e.LoanId);
 
