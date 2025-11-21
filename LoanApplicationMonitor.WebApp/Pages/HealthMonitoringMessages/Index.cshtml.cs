@@ -7,17 +7,19 @@ namespace LoanApplicationMonitor.WebApp.Pages.HealthMonitoringMessages
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<IndexModel> _logger;
-        private readonly string _apiBaseUrl;
+        private readonly IConfiguration _config;
+        private string ApiUrl { get; }
 
         private const int PageSize = 25;
         public int CurrentPage { get; set; } = 1;
         public int TotalPages { get; set; }
 
-        public IndexModel(IHttpClientFactory httpClientFactory, ILogger<IndexModel> logger, IConfiguration configuration)
+        public IndexModel(IHttpClientFactory httpClientFactory, ILogger<IndexModel> logger, IConfiguration config)
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;
-            _apiBaseUrl = configuration["LoanApplicationsApi"] ?? "";
+            _config = config;
+            ApiUrl = _config["ApiSettings:BaseUrl"] ?? string.Empty;
         }
 
         public List<HealthMonitoringMessageViewModel> HealthMonitoringMessages { get; set; } = new();
@@ -27,7 +29,7 @@ namespace LoanApplicationMonitor.WebApp.Pages.HealthMonitoringMessages
             CurrentPage = pageNumber;
 
             var client = _httpClientFactory.CreateClient("BackendApi");
-            client.BaseAddress = new Uri(_apiBaseUrl);
+            client.BaseAddress = new Uri(ApiUrl);
 
             string url = "api/HealthMonitoringMessage";
 
@@ -43,7 +45,7 @@ namespace LoanApplicationMonitor.WebApp.Pages.HealthMonitoringMessages
                     HealthMonitoringMessages = apiResponse
                         .Select(dto => new HealthMonitoringMessageViewModel
                         {
-                            id = dto.id,
+                            messageId = dto.messageId,
                             systemName = dto.systemName,
                             statusValue = dto.statusValue,
                             systemMessage = dto.systemMessage,

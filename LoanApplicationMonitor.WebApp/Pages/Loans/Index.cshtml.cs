@@ -9,7 +9,8 @@ namespace LoanApplicationMonitor.WebApp.Pages.Loans
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<IndexModel> _logger;
-        private readonly string _apiBaseUrl;
+        private readonly IConfiguration _config;
+        private string ApiUrl { get; }
         public string? ErrorMessage { get; set; }
         private const int PageSize = 25;
 
@@ -17,11 +18,12 @@ namespace LoanApplicationMonitor.WebApp.Pages.Loans
         public int CurrentPage { get; set; } = 1;
         public int TotalPages { get; set; }
 
-        public IndexModel(IHttpClientFactory httpClientFactory, ILogger<IndexModel> logger, IConfiguration configuration)
+        public IndexModel(IHttpClientFactory httpClientFactory, ILogger<IndexModel> logger, IConfiguration config)
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;
-            _apiBaseUrl = configuration["LoanApplicationsApi"] ?? "";
+            _config = config;
+            ApiUrl = _config["ApiSettings:BaseUrl"] ?? string.Empty;
         }
 
         public List<LoanApplicationViewModel> Loans { get; set; } = new();
@@ -31,7 +33,7 @@ namespace LoanApplicationMonitor.WebApp.Pages.Loans
             CurrentPage = pageNumber;
 
             var client = _httpClientFactory.CreateClient("BackendApi");
-            client.BaseAddress = new Uri(_apiBaseUrl);
+            client.BaseAddress = new Uri(ApiUrl);
 
             string url;
 
@@ -95,7 +97,7 @@ namespace LoanApplicationMonitor.WebApp.Pages.Loans
         public async Task<IActionResult> OnPostCreateAsync(LoanApplicationViewModel newLoan)
         {
             var client = _httpClientFactory.CreateClient();
-            client.BaseAddress = new Uri(_apiBaseUrl);
+            client.BaseAddress = new Uri(ApiUrl);
             var response = await client.PostAsJsonAsync("api/Loan", newLoan);
 
             if (!response.IsSuccessStatusCode)
@@ -115,7 +117,7 @@ namespace LoanApplicationMonitor.WebApp.Pages.Loans
         public async Task<IActionResult> OnPostUpdateAsync(LoanApplicationViewModel updatedLoan)
         {
             var client = _httpClientFactory.CreateClient();
-            client.BaseAddress = new Uri(_apiBaseUrl);
+            client.BaseAddress = new Uri(ApiUrl);
             var response = await client.PutAsJsonAsync($"api/Loan/{updatedLoan.loanId}", updatedLoan);
 
             if (!response.IsSuccessStatusCode)
@@ -135,7 +137,7 @@ namespace LoanApplicationMonitor.WebApp.Pages.Loans
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
             var client = _httpClientFactory.CreateClient();
-            client.BaseAddress = new Uri(_apiBaseUrl);
+            client.BaseAddress = new Uri(ApiUrl);
             await client.DeleteAsync($"api/Loan/{id}");
 
             return RedirectToPage();

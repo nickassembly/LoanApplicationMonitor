@@ -23,8 +23,18 @@ else
     Console.WriteLine("Azure Key Vault URI is not configured.");
 }
 
-var connString = builder.Configuration["ConnectionStrings:CloudGuerraTechNowDbConnection"] 
-    ?? throw new InvalidOperationException("Missing DB connection string.");
+string connString;
+
+if (builder.Environment.IsDevelopment())
+{
+    connString = builder.Configuration["ConnectionStrings:LocalGuerraTechNowDbConnection"]
+        ?? throw new InvalidOperationException("Missing DB connection string.");
+}
+else
+{
+    connString = builder.Configuration["ConnectionStrings:CloudGuerraTechNowDbConnection"]
+        ?? throw new InvalidOperationException("Missing DB connection string.");
+}
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -38,9 +48,13 @@ builder.Services.AddAutoMapper(typeof(LoanMapperProfile).Assembly);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("WebAppPolicy", policy =>
-        policy.WithOrigins("https://loanapplicationmonitorwebapp-f2fdf5gnerh6duhp.centralus-01.azurewebsites.net/")
-              .AllowAnyHeader()
-              .AllowAnyMethod());
+        policy.WithOrigins
+        (
+            "https://localhost:7246",
+            "https://loanapplicationmonitorwebapp-f2fdf5gnerh6duhp.centralus-01.azurewebsites.net/"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod());
 });
 
 builder.Services.AddDbContext<LoanApplicationDbContext>(options =>

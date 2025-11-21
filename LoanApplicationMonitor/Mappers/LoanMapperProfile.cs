@@ -11,7 +11,6 @@ namespace LoanApplicationMonitor.API.Mappers
             CreateMap<Loan, LoanReadDto>();
             CreateMap<LoanCreateDto, Loan>().ReverseMap();
             CreateMap<LoanUpdateDto, Loan>();
-            CreateMap<HealthMonitoringMessage, HealthMonitoringMessageReadDto>();
         }
     }
 }

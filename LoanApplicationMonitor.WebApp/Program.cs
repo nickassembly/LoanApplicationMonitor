@@ -2,10 +2,23 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
 
-var apiUrl = builder.Configuration["LoanApplicationsApi"] ?? "https://localhost:7203/";
+string apiUrl = builder.Configuration["ApiSettings:BaseUrl"] ?? string.Empty;
+
 builder.Services.AddHttpClient("BackendApi", client =>
 {
     client.BaseAddress = new Uri(apiUrl);
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ApiPolicy", policy =>
+        policy.WithOrigins
+        (
+            "https://localhost:7203",
+            "https://loanapplicationmonitorapi-e0f6gcajhxcjc8bt.centralus-01.azurewebsites.net"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod());
 });
 
 var app = builder.Build();
@@ -23,10 +36,11 @@ app.UseAuthorization();
 
 app.MapGet("/", context =>
 {
-    context.Response.Redirect("/HealthMonitoringMessages");
+    context.Response.Redirect("HealthMonitoringMessages");
     return Task.CompletedTask;
 });
 
+app.UseCors("ApiPolicy");
 app.MapRazorPages();
 
 app.Run();

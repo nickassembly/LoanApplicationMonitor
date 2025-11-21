@@ -48,6 +48,7 @@ namespace LoanApplicationMonitor.Data
             modelBuilder.Entity<HealthMonitoringMessage>(entity =>
             {
                 entity.ToTable("HealthMessages", "loan");
+                entity.HasKey(e => e.MessageId);
             });
         }
     }

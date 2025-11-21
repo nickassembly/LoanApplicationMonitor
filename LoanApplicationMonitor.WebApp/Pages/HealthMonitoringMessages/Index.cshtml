@@ -7,7 +7,7 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>Id</th>
+            <th>MessageId</th>
             <th>System Name</th>
             <th>Status</th>
             <th>Message</th>
@@ -18,7 +18,7 @@
         @foreach (var msg in Model.HealthMonitoringMessages)
         {
             <tr>
-                <td>@msg.id</td>
+                <td>@msg.messageId</td>
                 <td>@msg.systemName</td>
                 <td>@msg.statusValue</td>
                 <td>@msg.systemMessage</td>

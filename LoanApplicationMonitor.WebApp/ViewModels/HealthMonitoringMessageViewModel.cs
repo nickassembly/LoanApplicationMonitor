@@ -1,18 +1,11 @@
 ﻿
-public enum StatusValue
-{
-    pass,
-    fail,
-    warning
-}
-
 namespace LoanApplicationMonitor.WebApp.Models
 {
     public class HealthMonitoringMessageViewModel
     {
-        public int id { get; set; }
+        public int messageId { get; set; }
         public string systemName { get; set; } = string.Empty;
-        public StatusValue statusValue { get; set; }
+        public string statusValue { get; set; } = string.Empty;
         public string? systemMessage { get; set; } = string.Empty;
         public DateTime? testCompleted { get; set; }
     }
