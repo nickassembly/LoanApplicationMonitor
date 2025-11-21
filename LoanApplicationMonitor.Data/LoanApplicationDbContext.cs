@@ -12,6 +12,8 @@ namespace LoanApplicationMonitor.Data
 
         public DbSet<Loan> Loans { get; set; }
 
+        public DbSet<HealthMonitoringMessage> HealthMonitoringMessages { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -41,6 +43,11 @@ namespace LoanApplicationMonitor.Data
                      .HasMaxLength(1000);
 
                 entity.Property(e => e.UpdatedTime);
+            });
+
+            modelBuilder.Entity<HealthMonitoringMessage>(entity =>
+            {
+                entity.ToTable("HealthMessages", "loan");
             });
         }
     }

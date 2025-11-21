@@ -1,5 +1,4 @@
 using Azure.Identity;
-using Azure.Storage.Blobs;
 using LoanApplicationMonitor.API;
 using LoanApplicationMonitor.API.Mappers;
 using LoanApplicationMonitor.Core.Interfaces;
@@ -39,46 +38,13 @@ builder.Services.AddAutoMapper(typeof(LoanMapperProfile).Assembly);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("WebAppPolicy", policy =>
-        policy.WithOrigins("https://loanapplicationmonitor-webapp.azurewebsites.net")
+        policy.WithOrigins("https://loanapplicationmonitorwebapp-f2fdf5gnerh6duhp.centralus-01.azurewebsites.net/")
               .AllowAnyHeader()
               .AllowAnyMethod());
 });
 
 builder.Services.AddDbContext<LoanApplicationDbContext>(options =>
     options.UseSqlServer(connString, sql => sql.EnableRetryOnFailure()));
-
-// TODO -- update to use health message in sql table for azure branch
-// blob storage for health message monitoring data
-builder.Services.AddSingleton(sp =>
-{
-    var config = sp.GetRequiredService<IConfiguration>();
-    var blobConn = config.GetConnectionString("HealthMonitoringDataConnection")
-                   ?? throw new InvalidOperationException("Blob Storage connection string missing.");
-    var containerName = config["BlobStorage:ContainerName"] ?? "healthmonitoringdata";
-
-    var blobServiceClient = new BlobServiceClient(blobConn);
-    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-
-    // retry logic to mitigate slowness on initial connection
-    const int maxRetries = 5;
-    for (int i = 0; i < maxRetries; i++)
-    {
-        try
-        {
-            containerClient.CreateIfNotExists();
-            Console.WriteLine($"Blob container '{containerName}' ready at {containerClient.Uri}");
-            return containerClient;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Attempt {i + 1}/{maxRetries} - Could not connect to Blob Storage: {ex.Message}");
-            if (i < maxRetries - 1)
-                Thread.Sleep(2000);
-        }
-    }
-
-    throw new InvalidOperationException("Failed to connect to Blob Storage after multiple attempts.");
-});
 
 var app = builder.Build();
 
