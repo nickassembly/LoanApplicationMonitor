@@ -21,7 +21,7 @@ namespace LoanApplicationMonitor.WebApp.Pages.Loans
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;
-            _apiBaseUrl = configuration["ApiSettings:BaseUrl"] ?? "";
+            _apiBaseUrl = configuration["LoanApplicationsApi"] ?? "";
         }
 
         public List<LoanApplicationViewModel> Loans { get; set; } = new();

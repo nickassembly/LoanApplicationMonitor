@@ -17,7 +17,7 @@ namespace LoanApplicationMonitor.WebApp.Pages.HealthMonitoringMessages
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;
-            _apiBaseUrl = configuration["ApiSettings:BaseUrl"] ?? "";
+            _apiBaseUrl = configuration["LoanApplicationsApi"] ?? "";
         }
 
         public List<HealthMonitoringMessageViewModel> HealthMonitoringMessages { get; set; } = new();
