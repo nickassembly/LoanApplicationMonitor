@@ -36,7 +36,7 @@ app.UseAuthorization();
 
 app.MapGet("/", context =>
 {
-    context.Response.Redirect("HealthMonitoringMessages");
+    context.Response.Redirect("Loans");
     return Task.CompletedTask;
 });
 
